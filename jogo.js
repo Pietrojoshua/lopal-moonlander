@@ -10,9 +10,7 @@
 let canvas = document.querySelector("#jogo")
 let contexto = canvas.getContext("2d")
 
-let x;
-let velocidadeX
-let angulo;
+
 
 if (Math.round(Math.random()) == 0){
    x = 100
@@ -24,18 +22,22 @@ if (Math.round(Math.random()) == 0){
    angulo = Math.PI/2
 };
 
+let lancamentoPelaEsquerda = (Math.round(Math.random()) == 0)
+
+
+
  let moduloLunar = {
     posicao: {
-       x: x, 
+       x: lancamentoPelaEsquerda ? 100 : 700,
        y: 100
       }, 
-    angulo : -Math.PI/2,
+    angulo : lancamentoPelaEsquerda ?  -Math.PI/2 : Math.PI/2,
     largura: 20,
     altura: 20,
     cor: 'lightgray',
     motorLigado: false,
     velocidade: {
-        x: velocidadeX,
+        x: lancamentoPelaEsquerda ? 2 : -2,
         y: 0
     }, 
     combustivel: 1000,
@@ -47,27 +49,17 @@ if (Math.round(Math.random()) == 0){
 let estrelas = [];   
 
 for(let i = 0; i < 600; i++){
+
    estrelas[i] = {      
-         x:Math.random() * canvas.width,
+      x:Math.random() * canvas.width,
       y:Math.random() * canvas.height,
       raio: Math.sqrt(1 * Math.random()),
       brilho: 1.0,
       apagando: true ,
       cintilacao: 0.05 * Math.random()
-
-      }  
-
-   }  
-  
-
-
-
-
-
-
-
-
-
+   }
+   }
+      
 
 //secao de visualização
  function desenharModuloLunar(){
@@ -90,102 +82,80 @@ for(let i = 0; i < 600; i++){
 
     contexto.restore();
     
- }
-
- function desenharChama(){
-    contexto.beginPath()
-    //aumentar a chama
-    contexto.moveTo(moduloLunar.largura * -0.5, moduloLunar.altura * 0.5)
-    contexto.lineTo(moduloLunar.largura * 0.5, moduloLunar.altura * 0.5)
-    contexto.lineTo(0, moduloLunar.altura * 0.5 + Math.random() * 125)
-    contexto.lineTo(moduloLunar.largura * -0.5, moduloLunar.altura * 0.5)
-    contexto.closePath();
-    contexto.fillStyle = "rgb(23, 23, 221)"
-    contexto.fill()
- }
-
- function mostrarVelocidade(){
-    contexto.font = "bold 18px Arial"
-    contexto.textAlign = "center"
-    contexto.textBaseline = "middle"
-    contexto.fillStyle = "lightgray"
-    let velocidade = `velocidade: ${(10 * moduloLunar.velocidade.y).toFixed(2)}`
-    contexto.fillText(velocidade, 100, 60)
-
- }
-
-
- function mostrarCombustivel(){
-   contexto.font = 'bold 18px Arial'
-   contexto.textAlign = 'center'
-   contexto.textBaseline = 'middle'
-   contexto.fillStyle = 'lightgray'
-   let combustivel = `combustivel: ${((moduloLunar.combustivel /1000) * 100).toFixed(0)}%`
-   contexto.fillText(combustivel, 100, 80)
-
-   
- }
-
- 
-
- 
-
- function mostrarVelocidadeH(){
-
-    contexto.font = "bold 18px Arial"
-    contexto.textAlign = "left"
-    contexto.textBaseline = "middle"
-    contexto.fillStyle = "lightgray"
-    let velocidade = `velocidadeH: ${(10 * moduloLunar.velocidade.x).toFixed(2)}`
-    contexto.fillText(velocidade, 400, 60)
    }
-   function mostrarAngulo(){
-      contexto.font = "bold 18px Arial"
-      contexto.textAlign = "left"
-      contexto.textBaseline = "middle"
-      contexto.fillStyle = "lightgray"
-      let angulo = `Angulo: ${(moduloLunar.angulo * 180/Math.PI).toFixed(2)}°`
-      contexto.fillText(angulo, 400, 80)
+   
+   function desenharChama(){
+      contexto.beginPath()
+      //aumentar a chama
+      contexto.moveTo(moduloLunar.largura * -0.5, moduloLunar.altura * 0.5)
+      contexto.lineTo(moduloLunar.largura * 0.5, moduloLunar.altura * 0.5)
+      contexto.lineTo(0, moduloLunar.altura * 0.5 + Math.random() * 125)
+      contexto.lineTo(moduloLunar.largura * -0.5, moduloLunar.altura * 0.5)
+      contexto.closePath();
+      contexto.fillStyle = "rgb(23, 23, 221)"
+      contexto.fill()
+   }
+   function mostrarIndicador(mensagem, x, y){
+
+      contexto.font = 'bold 18px Arial'
+      contexto.textAlign = 'center'
+      contexto.textBaseline = 'middle'
+      contexto.fillStyle = 'lightgray'
+      contexto.fillText(mensagem, x, y)
+   }
+   
+   function mostrarVelocidade(){
+       mensagem = `velocidadeH: ${(10 * moduloLunar.velocidade.x).toFixed(2)}`;
+       mostrarIndicador(mensagem, 100, 60);
+       mensagem = `Velocidade Vertical ${(10 * moduloLunar.velocidade.y).toFixed(2)}`;
+       mostrarIndicador(mensagem, 100, 90)
+      
    }
     
-function mostrarAltitude(){
-   contexto.font = "bold 18px Arial"
-   contexto.textAlign = "left"
-   contexto.textBaseline = "middle"
-   contexto.fillStyle = "lightgray"
-   let altitude = `Altitude: ${(canvas.height - moduloLunar.posicao.y).toFixed(2)}`
-   contexto.fillText(altitude, 600, 80);
-}
-function desenharEstrelas(){
-   contexto.save()
-   for(let i = 0; i < estrelas.length; i++){
-      let estrela = estrelas[i];
-      contexto.beginPath();
-      contexto.arc(estrela.x, estrela.y, estrela.raio, 0, 2*Math.PI);
-      contexto.closePath();
-      contexto.fillStyle = `rgba(255, 255, 255, ${estrela.brilho} )`;
-      contexto.fill();
-      if(estrela.apagando){
-         estrela.brilho -=estrela.cintilacao
-         if(estrela.brilho <= 0){
-            estrela.apagando = false
-         }
-      } else {
-         estrela.brilho += estrela.cintilacao
-         if(estrela.brilho >= 1.0){
-            estrela.apagando = true
-         }
-            
-      }
-      
+   function mostrarCombustivel(){
+      mensagem = `Combustivel: ${((moduloLunar.combustivel / 1000) * 100).toFixed(2)}%`
+      mostrarIndicador(mensagem, 500, 30)
       
    }
-   contexto.restore()
-}
+    
+   function mostrarAngulo(){
+      mensagem = `Angulo: ${(moduloLunar.angulo * 180/Math.PI).toFixed(2)}°`
+      mostrarIndicador(mensagem,500, 60)
+   }
+   
+   function mostrarAltitude(){    
+     mensagem = `Altitude: ${(canvas.height - moduloLunar.posicao.y).toFixed(2)}`
+     mostrarIndicador(mensagem, 100, 30)
+   }
 
-   
-   
-   
+
+   function desenharEstrelas(){
+      contexto.save()
+      for(let i = 0; i < estrelas.length; i++){
+         let estrela = estrelas[i];
+         contexto.beginPath();
+         contexto.arc(estrela.x, estrela.y, estrela.raio, 0, 2*Math.PI);
+         contexto.closePath();
+         contexto.fillStyle = `rgba(255, 255, 255, ${estrela.brilho} )`;
+         contexto.fill();
+         if(estrela.apagando){
+            estrela.brilho -=estrela.cintilacao
+            if(estrela.brilho <= 0.1){
+               estrela.apagando = false
+            }
+         } else {
+            estrela.brilho += estrela.cintilacao
+            if(estrela.brilho >= 0.95){
+               estrela.apagando = true
+            }
+            
+         }
+         
+         
+      }
+      contexto.restore()
+   }
+      
    function desenhar(){
       //limpar tela
       contexto.clearRect(0, 0, canvas.width, canvas.height)
@@ -196,16 +166,15 @@ function desenharEstrelas(){
       desenharModuloLunar()
       mostrarVelocidade()
       mostrarCombustivel()
-      mostrarVelocidadeH()
       mostrarAngulo()
       mostrarAltitude()
       if(moduloLunar.posicao.y >= (canvas.height - 0.5 * moduloLunar.altura)){ 
          
          if(moduloLunar.velocidade.y >= 0.5|| 
-            moduloLunar.velocidade.x >= 0.5||
-            5 < moduloLunar.angulo || 
-            moduloLunar.angulo < -5   
-         ){
+            Math.abs(moduloLunar.velocidade.x) >= 0.5||
+            5 < Math.abs(moduloLunar.angulo)
+         )
+         {
             contexto.font = "Bold 48px VT323 "
             contexto.textAlign = "center"
             contexto.textBaseline = "middle"
@@ -219,10 +188,11 @@ function desenharEstrelas(){
             return contexto.fillText("You win", 360, 270)
             
          }
+
       }
       
       //Esta funcao repete a execuçao da funcao desenhar a cada atualização de tela (ou a cada quatro)
-      requestAnimationFrame(desenhar)
+         requestAnimationFrame(desenhar)
    }
    //secao de controle
    document.addEventListener('keydown', teclaPressionada);
@@ -277,16 +247,9 @@ function desenharEstrelas(){
     }
     if(moduloLunar.motorLigado){
       moduloLunar.velocidade.y -=0.0115 * Math.cos(moduloLunar.angulo)
-      moduloLunar.velocidade.x +=0.0115* Math.sin(moduloLunar.angulo)
+      moduloLunar.velocidade.x +=0.0115 * Math.sin(moduloLunar.angulo)
       gasto()
     }
-    moduloLunar.velocidade.y += gravidade
-    
-    
-
-   
-   
-   
+    moduloLunar.velocidade.y += gravidade   
 }
-
 desenhar() 
