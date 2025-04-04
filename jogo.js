@@ -22,7 +22,7 @@ if (Math.round(Math.random()) == 0){
    x = 700
    velocidadeX = -2
    angulo = Math.PI/2
-}
+};
 
  let moduloLunar = {
     posicao: {
@@ -42,18 +42,23 @@ if (Math.round(Math.random()) == 0){
     rotacaoAntiHorario: false,
     rotacaoHorario: false
     
-}
- let estrelas = []
- for(let i = 0; i <500; i++){
-   estrelas[i] = {
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      raio: Math.sqrt(Math.random() * 2),
-      transparencia: 1.0,
-      diminuicao: true,
-      razaoDeCintilacao: Math.random() * 0.05
-   };
- }
+};
+
+let estrelas = [];   
+
+for(let i = 0; i < 600; i++){
+   estrelas[i] = {      
+         x:Math.random() * canvas.width,
+      y:Math.random() * canvas.height,
+      raio: Math.sqrt(1 * Math.random()),
+      brilho: 1.0,
+      apagando: true ,
+      cintilacao: 0.05 * Math.random()
+
+      }  
+
+   }  
+  
 
 
 
@@ -92,10 +97,10 @@ if (Math.round(Math.random()) == 0){
     //aumentar a chama
     contexto.moveTo(moduloLunar.largura * -0.5, moduloLunar.altura * 0.5)
     contexto.lineTo(moduloLunar.largura * 0.5, moduloLunar.altura * 0.5)
-    contexto.lineTo(0, moduloLunar.altura * 0.5 + Math.random() * 100)
+    contexto.lineTo(0, moduloLunar.altura * 0.5 + Math.random() * 125)
     contexto.lineTo(moduloLunar.largura * -0.5, moduloLunar.altura * 0.5)
     contexto.closePath();
-    contexto.fillStyle = "orange"
+    contexto.fillStyle = "rgb(23, 23, 221)"
     contexto.fill()
  }
 
@@ -121,17 +126,7 @@ if (Math.round(Math.random()) == 0){
    
  }
 
- function desenharEstrelas(){
-   for( let i = 0; i < estrelas.length; i++){
-      let estrela = estrelas[i];
-      contexto.beginPath();
-      contexto.arc(estrela.x, estrela.y, estrela.raio, 0, 2 * Math.PI)
-      contexto.closePath()
-      contexto.fillStyle = "rgba(255, 255, 255, "+ estrela.transparencia + ")";
-      contexto.fill()
-      contexto.restore()
-   }
- }
+ 
 
  
 
@@ -159,7 +154,33 @@ function mostrarAltitude(){
    contexto.textBaseline = "middle"
    contexto.fillStyle = "lightgray"
    let altitude = `Altitude: ${(canvas.height - moduloLunar.posicao.y).toFixed(2)}`
-   contexto.fillText(altitude, 600, 80)
+   contexto.fillText(altitude, 600, 80);
+}
+function desenharEstrelas(){
+   contexto.save()
+   for(let i = 0; i < estrelas.length; i++){
+      let estrela = estrelas[i];
+      contexto.beginPath();
+      contexto.arc(estrela.x, estrela.y, estrela.raio, 0, 2*Math.PI);
+      contexto.closePath();
+      contexto.fillStyle = `rgba(255, 255, 255, ${estrela.brilho} )`;
+      contexto.fill();
+      if(estrela.apagando){
+         estrela.brilho -=estrela.cintilacao
+         if(estrela.brilho <= 0){
+            estrela.apagando = false
+         }
+      } else {
+         estrela.brilho += estrela.cintilacao
+         if(estrela.brilho >= 1.0){
+            estrela.apagando = true
+         }
+            
+      }
+      
+      
+   }
+   contexto.restore()
 }
 
    
@@ -171,13 +192,13 @@ function mostrarAltitude(){
       //essa funcao atualiza o posicao do modulo lunar em funcao da gravidade
       
       atracaoGravitacional()
+      desenharEstrelas()
       desenharModuloLunar()
       mostrarVelocidade()
       mostrarCombustivel()
       mostrarVelocidadeH()
       mostrarAngulo()
       mostrarAltitude()
-      desenharEstrelas()
       if(moduloLunar.posicao.y >= (canvas.height - 0.5 * moduloLunar.altura)){ 
          
          if(moduloLunar.velocidade.y >= 0.5|| 
